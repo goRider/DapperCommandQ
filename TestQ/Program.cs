@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using RandomNameGeneratorLibrary;
+using TestQ.DbSeedGenerator;
 using TestQ.Models;
 using TestQ.Services.Commands.MGTSEmployee;
 using TestQ.Services.UnitOfWork;
@@ -10,6 +14,8 @@ namespace TestQ
     {
         private const string ConnectionString =
             @"Server=DESKTOP-U64RJVE\SQLEXPRESS;Database=FakeIgn;Trusted_Connection=True;MultipleActiveResultSets=true";
+
+        private List<string> _firstNameList;
 
         private async Task AddUser()
         {
@@ -52,12 +58,32 @@ namespace TestQ
 
             }
         }
+
         static void Main(string[] args)
         {
-            Program.
+            var maleAttrValue = new UserAttributeValue();
+            maleAttrValue.AddMaleEmpAttributes(1100, 500, 500);
+            Console.ReadLine();
+        }
 
+        static void AddMaleNames(int seedCount, int nameCount, int iterationCount)
+        {
+            Random rand = new Random(seedCount);
+            var genMales = new PersonNameGenerator(rand);
+            var firstNameList = genMales.GenerateMultipleMaleFirstNames(nameCount).ToList();
+            var lastNameList = genMales.GenerateMultipleLastNames(nameCount).ToList();
+            List<MGTSEmployee> mgtsList = new List<MGTSEmployee>();
+            var mgts = new MGTSEmployee();
+            int id = 0;
 
-            Console.WriteLine("Hello World!");
+            for (int i = 0; i < iterationCount; i++)
+            {
+                mgts.FirstName = firstNameList[i];
+                mgts.LastName = lastNameList[i];
+                mgtsList.Add(mgts);
+                id += i;
+                Console.WriteLine("{0}. {1} {2}", i, mgts.FirstName, mgts.LastName);
+            }
         }
     }
 }
